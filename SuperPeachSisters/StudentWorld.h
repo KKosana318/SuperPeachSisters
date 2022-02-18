@@ -16,8 +16,9 @@ public:
 	virtual void cleanUp();
 
 private:
-	// vector<Actor*> actors;
-
+	 vector<Actor*> actors;
+	 Actor* peach;
+	 bool checkOverlap(Actor* first, Actor* second);
 };
 
 #endif // STUDENTWORLD_H_

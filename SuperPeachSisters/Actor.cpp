@@ -132,7 +132,7 @@ void Shell::doSomething() {
 
 }
 
-Goomba::Goomba(int x, int y) :Actor(x, y, rand() % 2 == 0 ? 0 : 180) { // 0 degrees if rand returns even number, 180 if odd
+Goomba::Goomba(int x, int y) :Actor(IID_GOOMBA, x, y, rand() % 2 == 0 ? 0 : 180) { // 0 degrees if rand returns even number, 180 if odd
 
 }
 
@@ -144,7 +144,7 @@ void Goomba::doSomething() {
 
 }
 
-Koopa::Koopa(int x, int y) :Actor(x, y, rand() % 2 == 0 ? 0 : 180) {
+Koopa::Koopa(int x, int y) :Actor(IID_KOOPA, x, y, rand() % 2 == 0 ? 0 : 180) {
 
 }
 
@@ -156,7 +156,7 @@ void Koopa::doSomething() {
 
 }
 
-Piranha::Piranha(int x, int y) :Actor(x, y, rand() % 2 == 0 ? 0 : 180) {
+Piranha::Piranha(int x, int y) :Actor(IID_PIRANHA, x, y, rand() % 2 == 0 ? 0 : 180) {
 	m_delay = 0;
 }
 

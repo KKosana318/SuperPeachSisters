@@ -16,6 +16,8 @@ public:
 
 	virtual ~Actor() = 0;
 	virtual void doSomething();
+	bool alive() { return m_alive; }
+	void kill() { m_alive = false; }
 
 private:
 	bool m_alive;
