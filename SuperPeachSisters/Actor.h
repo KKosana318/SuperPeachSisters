@@ -27,6 +27,7 @@ class Peach : public Actor {
 public:
 	Peach(int x, int y);
 	~Peach();
+	void setKey(int key);
 	void doSomething();
 
 private:
@@ -35,6 +36,7 @@ private:
 	bool m_starPower;
 	bool m_shootPower;
 	bool m_jumpPower;
+	int m_key;
 };
 
 class Block : public Actor {

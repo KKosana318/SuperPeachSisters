@@ -17,6 +17,10 @@ StudentWorld::StudentWorld(string assetPath) : GameWorld(assetPath) {
     peach = nullptr;
 }
 
+StudentWorld::~StudentWorld() {
+    cleanUp();
+}
+
 int StudentWorld::init() {
     Level lev(assetPath());
 
@@ -87,11 +91,39 @@ int StudentWorld::init() {
 }
 
 int StudentWorld::move() {
+    int key;
+    getKey(key);
+    peach->setKey(key);
+    peach->doSomething();
+
+    for (auto const& actor : actors) {
+        actor->doSomething();
+        if (!peach->alive()) {
+            playSound(SOUND_PLAYER_DIE);
+            return GWSTATUS_PLAYER_DIED;
+        }
+    }
+
+    // remove dead objects
+    for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
+        if ((*i)->alive()) {
+            Actor* temp = *i;
+            actors.erase(i);
+            delete temp;
+        }
+    }
+
     return GWSTATUS_CONTINUE_GAME;
 }
 
 void StudentWorld::cleanUp() {
+    for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
+        Actor* temp = *i;
+        actors.erase(i);
+        delete temp;
+    }
 
+    delete peach;
 }
 
 bool StudentWorld::checkOverlap(Actor* first, Actor* second) {

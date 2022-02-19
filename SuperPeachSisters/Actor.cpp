@@ -21,8 +21,24 @@ Peach::~Peach() {
 
 }
 
-void Peach::doSomething() {
+void Peach::setKey(int key) {
+	m_key = key;
+}
 
+void Peach::doSomething() {
+	if (!alive()) {
+		return; 
+	}
+
+	if (m_key == KEY_PRESS_LEFT) {
+		setDirection(180);
+		moveTo(getX() - 4, getY());
+	}
+
+	if (m_key == KEY_PRESS_RIGHT) {
+		setDirection(0);
+		moveTo(getX() + 4, getY());
+	}
 }
 
 Block::Block(int x, int y, char goodie) :Actor(IID_BLOCK, x, y, 0, 2) {

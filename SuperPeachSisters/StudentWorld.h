@@ -11,13 +11,14 @@
 class StudentWorld : public GameWorld {
 public:
 	StudentWorld(std::string assetPath);
+	~StudentWorld();
 	virtual int init();
 	virtual int move();
 	virtual void cleanUp();
 
 private:
 	 vector<Actor*> actors;
-	 Actor* peach;
+	 Peach* peach;
 	 bool checkOverlap(Actor* first, Actor* second);
 };
 
