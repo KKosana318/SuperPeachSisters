@@ -15,18 +15,11 @@ public:
 	virtual int init();
 	virtual int move();
 	virtual void cleanUp();
-	Actor* objectAt(int x, int y);
-	bool isPeachAt(int x, int y);
-	void addActor(Actor* actor);
-	bool isPeach(Actor* actor);
-	void finishedLevel();
-	void wonGame();
+	bool isBlockingObjectAt(int x, int y);
 
 private:
 	 vector<Actor*> actors;
 	 Peach* peach;
-	 bool m_finishedLevel;
-	 bool m_wonGame;
 };
 
 #endif // STUDENTWORLD_H_

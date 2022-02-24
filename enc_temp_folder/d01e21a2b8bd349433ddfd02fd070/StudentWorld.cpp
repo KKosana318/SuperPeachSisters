@@ -25,8 +25,6 @@ StudentWorld::~StudentWorld() {
 int StudentWorld::init() {
     Level lev(assetPath());
 
-    m_finishedLevel = false;
-
     ostringstream oss;
     oss << "level";
     if (getLevel() < 10) {

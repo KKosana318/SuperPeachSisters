@@ -15,7 +15,6 @@ GameWorld* createStudentWorld(string assetPath) {
 
 StudentWorld::StudentWorld(string assetPath) : GameWorld(assetPath) {
     peach = nullptr;
-    m_finishedLevel = m_wonGame = false;
 }
 
 StudentWorld::~StudentWorld() {
@@ -24,8 +23,6 @@ StudentWorld::~StudentWorld() {
 
 int StudentWorld::init() {
     Level lev(assetPath());
-
-    m_finishedLevel = false;
 
     ostringstream oss;
     oss << "level";
@@ -94,33 +91,27 @@ int StudentWorld::init() {
 }
 
 int StudentWorld::move() {
+    //int key;
+    //getKey(key);
+    //peach->setKey(key);
     peach->doSomething();
 
-    for (auto const& actor : actors) {
-        actor->doSomething();
-        if (!peach->alive()) {
-            playSound(SOUND_PLAYER_DIE);
-            return GWSTATUS_PLAYER_DIED;
-        }
-        if (m_wonGame) {
-            playSound(SOUND_GAME_OVER);
-            return GWSTATUS_PLAYER_WON;
-        }
-        if (m_finishedLevel) {
-            playSound(SOUND_FINISHED_LEVEL);
-            return GWSTATUS_FINISHED_LEVEL;
-        }
-    }
+    //for (auto const& actor : actors) {
+    //    actor->doSomething();
+    //    if (!peach->alive()) {
+    //        playSound(SOUND_PLAYER_DIE);
+    //        return GWSTATUS_PLAYER_DIED;
+    //    }
+    //}
 
-    // remove dead objects
-    for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
-        if (!(*i)->alive()) {
-            Actor* temp = *i;
-            actors.erase(i);
-            i--;
-            delete temp;
-        }
-    }
+    //// remove dead objects
+    //for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
+    //    if ((*i)->alive()) {
+    //        Actor* temp = *i;
+    //        actors.erase(i);
+    //        delete temp;
+    //    }
+    //}
 
     return GWSTATUS_CONTINUE_GAME;
 }
@@ -137,38 +128,18 @@ void StudentWorld::cleanUp() {
     delete peach;
 }
 
-// returns first non-peach object in vector at x, y, otherwise, returns nullptr
-Actor* StudentWorld::objectAt(int x, int y) { 
+bool StudentWorld::isBlockingObjectAt(int x, int y) {
     for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
-        int firstX = (*i)->getX();
-        int secondX = x;
-        int firstY = (*i)->getY();
-        int secondY = y;
-        if (abs(firstX - secondX) < SPRITE_WIDTH && abs(firstY - secondY) < SPRITE_HEIGHT) {
-            return *i;
+        if ((*i)->blocking()) {
+            int firstX = (*i)->getX();
+            int secondX = x;
+            int firstY = (*i)->getY();
+            int secondY = y;
+            if (abs(firstX - secondX) < SPRITE_WIDTH && abs(firstY - secondY) < SPRITE_HEIGHT) {
+                return true;
+            }
         }
     }
 
-    return nullptr;
+    return false;
 }
-
-bool StudentWorld::isPeachAt(int x, int y) {
-    return (abs(peach->getX() - x) < SPRITE_WIDTH && abs(peach->getY() - y) < SPRITE_HEIGHT);
-}
-
-void StudentWorld::addActor(Actor* actor) {
-    actors.push_back(actor);
-}
-
-bool StudentWorld::isPeach(Actor* actor) {
-    return actor == peach;
-}
-
-void StudentWorld::finishedLevel() {
-    m_finishedLevel = true;
-}
-
-void StudentWorld::wonGame() {
-    m_wonGame = true;
-}
-

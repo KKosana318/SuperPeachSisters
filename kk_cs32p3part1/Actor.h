@@ -15,19 +15,19 @@ public:
 				 int y, 
 				 int dir = 0, 
 				 int depth = 0,
-				 double size = 1.0);
+				 double size = 1.0,
+				 bool blocking = false);
 
 	virtual ~Actor() = 0;
 	StudentWorld* getWorld() { return m_world; }
 	virtual void doSomething();
-	virtual void bonk();
 	bool alive() { return m_alive; }
+	bool blocking() { return m_blocking; }
 	void kill() { m_alive = false; }
-	virtual bool blocking() { return false; }
-	virtual bool damageable() { return false; }
 
 private:
 	bool m_alive;
+	bool m_blocking;
 	StudentWorld* m_world;
 };
 
@@ -35,30 +35,22 @@ class Peach : public Actor {
 public:
 	Peach(StudentWorld* world, int x, int y);
 	~Peach();
+	void setKey(int key);
 	void doSomething();
-	void bonk();
-	bool damageable() { return true; }
-	void giveStarPower(int n);
-	void giveJumpPower();
-	void giveShootPower();
-	void increaseHP();
 
 private:
-	int m_hp;
+	int hp;
+	bool m_invincible;
+	bool m_starPower;
 	bool m_shootPower;
 	bool m_jumpPower;
-	int m_remainingJumpDistance;
-	int m_remainingStarInvincibilityTicks;
-	int m_remainingTempInvincibilityTicks;
-	int m_remainingRechargeTime;
+	int m_key;
 };
 
 class Block : public Actor {
 public:
 	Block(StudentWorld* world, int x, int y, char goodie = 'n');
 	~Block();
-	void Bonk();
-	bool blocking() { return true; }
 private:
 	char m_goodie; // n=none, ^ = mushroom, % = flower, * = star
 	bool m_released;
@@ -68,7 +60,6 @@ class Pipe : public Actor {
 public:
 	Pipe(StudentWorld* world, int x, int y);
 	~Pipe();
-	bool blocking() { return true; }
 };
 
 class Flag : public Actor {
