@@ -42,7 +42,6 @@ int StudentWorld::init() {
         cerr << "Could not find level01.txt data file" << endl;
         return GWSTATUS_LEVEL_ERROR;
     }
-
     else if (result == Level::load_success) {
         for (int i = 0; i < GRID_WIDTH; i++) {
             for (int j = 0; j < GRID_HEIGHT; j++) {
@@ -112,13 +111,16 @@ int StudentWorld::move() {
         }
     }
 
+
     // remove dead objects
-    for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
+    vector<Actor*>::iterator i = actors.begin();
+    while (i != actors.end()) {
         if (!(*i)->alive()) {
-            Actor* temp = *i;
-            actors.erase(i);
-            i--;
-            delete temp;
+            delete* i;
+            i = actors.erase(i);
+        }
+        else {
+            i++;
         }
     }
 
@@ -137,20 +139,37 @@ void StudentWorld::cleanUp() {
     delete peach;
 }
 
-// returns first non-peach object in vector at x, y, otherwise, returns nullptr
+// returns first non-peach object in vector at x, y or nullptr if no such object
 Actor* StudentWorld::objectAt(int x, int y) { 
     for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
-        int firstX = (*i)->getX();
-        int secondX = x;
-        int firstY = (*i)->getY();
-        int secondY = y;
-        if (abs(firstX - secondX) < SPRITE_WIDTH && abs(firstY - secondY) < SPRITE_HEIGHT) {
+        int firstX = (*i)->getX(); // 80
+        int secondX = x; // 108
+        int firstY = (*i)->getY(); // 32
+        int secondY = y; // 38
+        if (abs(firstX - secondX) < SPRITE_WIDTH && abs(firstY - secondY) < SPRITE_HEIGHT && firstX <= secondX && firstY <= secondY) {
             return *i;
         }
     }
 
     return nullptr;
 }
+
+// returns first non-peach object that overlaps with the object starting at x,y or nullptr if no such object
+Actor* StudentWorld::objectOverlaps(int x, int y) {
+    for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
+        int firstX = (*i)->getX();
+        int secondX = x;
+        int firstY = (*i)->getY();
+        int secondY = y;
+        if (abs(firstX - secondX) < SPRITE_WIDTH && abs(firstY - secondY) < SPRITE_HEIGHT && firstX <= secondX && firstY <= secondY) {
+            return *i;
+        }
+    }
+
+    return nullptr;
+}
+
+
 
 bool StudentWorld::isPeachAt(int x, int y) {
     return (abs(peach->getX() - x) < SPRITE_WIDTH && abs(peach->getY() - y) < SPRITE_HEIGHT);
@@ -162,6 +181,10 @@ void StudentWorld::addActor(Actor* actor) {
 
 bool StudentWorld::isPeach(Actor* actor) {
     return actor == peach;
+}
+
+Peach* StudentWorld::getPeach() {
+    return peach;
 }
 
 void StudentWorld::finishedLevel() {
