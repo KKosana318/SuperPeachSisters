@@ -36,16 +36,7 @@ class AutoActor : public Actor {
 public:
 	AutoActor(StudentWorld* world, int x, int y, int imageID, int dir = 0);
 	~AutoActor();
-	virtual void move();
-};
-
-class Fireball : public AutoActor {
-public:
-	Fireball(StudentWorld* world, int x, int y, int imageID, int dir = 0);
-	~Fireball();
-	void move();
-
-	
+	virtual void move(bool canTurn = true);
 };
 
 class Enemy : public Actor {
@@ -67,6 +58,8 @@ public:
 	void bonk();
 	bool damageable() { return true; }
 	bool hasStarPower() { return m_remainingStarInvincibilityTicks > 0; }
+	bool hasShootPower() { return m_shootPower; }
+	bool hasJumpPower() { return m_jumpPower; }
 	void giveStarPower(int n);
 	void giveJumpPower();
 	void giveShootPower();
@@ -86,7 +79,7 @@ class Block : public Actor {
 public:
 	Block(StudentWorld* world, int x, int y, char goodie = 'n');
 	~Block();
-	void Bonk();
+	void bonk();
 	bool blocking() { return true; }
 private:
 	char m_goodie; // n=none, ^ = mushroom, % = flower, * = star
@@ -136,14 +129,14 @@ public:
 	void doSomething();
 };
 
-class PiranhaFireball : public Fireball {
+class PiranhaFireball : public AutoActor {
 public:
 	PiranhaFireball(StudentWorld* world, int x, int y, int dir);
 	~PiranhaFireball();
 	void doSomething();
 };
 
-class PeachFireball : public Fireball {
+class PeachFireball : public AutoActor {
 public:
 	PeachFireball(StudentWorld* world, int x, int y, int dir);
 	~PeachFireball();
@@ -176,6 +169,9 @@ public:
 	Piranha(StudentWorld* world, int x, int y);
 	~Piranha();
 	void doSomething();
+	void bonk();
+	void damage();
+	bool damageable() { return true; }
 private:
 	int m_delay;
 };

@@ -23,56 +23,45 @@ AutoActor::~AutoActor() {
 
 }
 
-void AutoActor::move() {
-	if (getWorld()->objectOverlaps(getX(), getY() - 2) == nullptr || !(getWorld()->objectOverlaps(getX(), getY() - 2)->blocking())) { // nothing blocking right side of fireball
+void AutoActor::move(bool canTurn) {
+	cout << getX() << endl;
+	cout << getY() << endl << endl;
+	if (getWorld()->objectOverlaps(getX(), getY() - 2) == nullptr || !(getWorld()->objectOverlaps(getX(), getY() - 2)->blocking())) { // falls if left and right edges are hovering 
 		if (getWorld()->objectOverlaps(getX() + SPRITE_WIDTH - 1, getY() - 2) == nullptr || !(getWorld()->objectOverlaps(getX() + SPRITE_WIDTH - 1, getY() - 2)->blocking())) {
 			moveTo(getX(), getY() - 2);
 		}
 	}
+
 	if (getDirection() == 0) {
-		if (getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY()) == nullptr || !(getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY())->blocking())) {
+		if ((getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY()) == nullptr || !(getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY())->blocking()))
+			&& (getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY() + SPRITE_HEIGHT - 1) == nullptr || !(getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY() + SPRITE_HEIGHT - 1)->blocking()))) { 
 			moveTo(getX() + 2, getY());
 		}
 		else {
-			setDirection(180);
+			if (canTurn) {
+				setDirection(180);
+				cout << "facing left" << endl;
+			}
+			else {
+				kill();
+				return;
+			}
 		}
 	}
 	else if (getDirection() == 180) {
-		if (getWorld()->objectOverlaps(getX() - 2, getY()) == nullptr || !(getWorld()->objectOverlaps(getX() - 2, getY())->blocking())) {
+		if ((getWorld()->objectOverlaps(getX() - 2, getY()) == nullptr || !(getWorld()->objectOverlaps(getX() - 2, getY())->blocking())) 
+			 && (getWorld()->objectOverlaps(getX() - 2, getY() + SPRITE_HEIGHT - 1) == nullptr || !(getWorld()->objectOverlaps(getX() - 2, getY() + SPRITE_HEIGHT - 1)->blocking()))) {
 			moveTo(getX() - 2, getY());
 		}
 		else {
-			setDirection(0);
-		}
-	}
-}
-
-Fireball::Fireball(StudentWorld* world, int x, int y, int imageID, int dir) : AutoActor(world, x, y, imageID, dir) {}
-
-Fireball::~Fireball() {
-
-}
-
-void Fireball::move() {
-	if (getWorld()->objectOverlaps(getX(), getY() - 2) == nullptr || !(getWorld()->objectOverlaps(getX(), getY() - 2)->blocking())) { // nothing blocking right side of fireball
-		if (getWorld()->objectOverlaps(getX() + SPRITE_WIDTH - 1, getY() - 2) == nullptr || !(getWorld()->objectOverlaps(getX() + SPRITE_WIDTH - 1, getY() - 2)->blocking())) {
-			moveTo(getX(), getY() - 2);
-		}
-	}
-	if (getDirection() == 0) {
-		if (getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY()) == nullptr || !(getWorld()->objectOverlaps(getX() + SPRITE_WIDTH + 1, getY())->blocking())) {
-			moveTo(getX() + 2, getY());
-		}
-		else {
-			kill();
-		}
-	}
-	else if (getDirection() == 180) {
-		if (getWorld()->objectOverlaps(getX() - 2, getY()) == nullptr || !(getWorld()->objectOverlaps(getX() - 2, getY())->blocking())) {
-			moveTo(getX() - 2, getY());
-		}
-		else {
-			kill();
+			if (canTurn) {
+				setDirection(0);
+				cout << "facing right" << endl;
+			}
+			else {
+				kill();
+				return;
+			}
 		}
 	}
 }
@@ -132,7 +121,7 @@ void Enemy::damage() {
 
 Peach::Peach(StudentWorld* world, int x, int y) : Actor(world, IID_PEACH, x, y) {
 	m_hp = 1;
-	m_shootPower = m_jumpPower = true;
+	m_shootPower = m_jumpPower = false;
 	m_remainingJumpDistance = 0;
 	m_remainingStarInvincibilityTicks = 0;
 	m_remainingTempInvincibilityTicks = 0;
@@ -157,11 +146,11 @@ void Peach::doSomething() {
 		Actor* upObjLeft = getWorld()->objectOverlaps(getX(), getY() + SPRITE_HEIGHT + 3);
 		Actor* upObjRight = getWorld()->objectOverlaps(getX() + 4, getY() + SPRITE_HEIGHT + 3);
 		if (upObjLeft != nullptr && upObjLeft->blocking()) {
-			getWorld()->objectOverlaps(upObjLeft->getX(), upObjLeft->getY())->bonk();
+			upObjLeft->bonk();
 			m_remainingJumpDistance = 0;
 		}
 		else if (upObjRight != nullptr && upObjRight->blocking()) {
-			getWorld()->objectOverlaps(upObjRight->getX(), upObjRight->getY())->bonk();
+			upObjRight->bonk();
 			m_remainingJumpDistance = 0;
 		}
 		else {
@@ -201,8 +190,9 @@ void Peach::doSomething() {
 		}
 	}
 	else if (key == KEY_PRESS_UP) {
-		Actor* underObj = getWorld()->objectOverlaps(getX(), getY() - 1);
-		if (underObj != nullptr && underObj->blocking()) {
+		Actor* underObjLeft = getWorld()->objectOverlaps(getX(), getY() - 1);
+		Actor* underObjRight = getWorld()->objectOverlaps(getX() + 4, getY() - 1);
+		if ((underObjLeft != nullptr && underObjLeft->blocking()) || (underObjRight != nullptr && underObjRight->blocking())) {
 			getWorld()->playSound(SOUND_PLAYER_JUMP);
 			if (m_jumpPower) {
 				m_remainingJumpDistance = 12;
@@ -235,6 +225,7 @@ void Peach::bonk() {
 		}
 		else {
 			kill();
+			getWorld()->decLives();
 		}
 	}
 }
@@ -264,7 +255,7 @@ Block::~Block() {
 
 }
 
-void Block::Bonk() {
+void Block::bonk() {
 	if (m_goodie == 'n' || m_released) {
 		getWorld()->playSound(SOUND_PLAYER_BONK);
 	}
@@ -378,7 +369,7 @@ void Star::doSomething() {
 	move();
 }
 
-PiranhaFireball::PiranhaFireball(StudentWorld* world, int x, int y, int dir) : Fireball(world, x, y, IID_PIRANHA_FIRE, dir) {
+PiranhaFireball::PiranhaFireball(StudentWorld* world, int x, int y, int dir) : AutoActor(world, x, y, IID_PIRANHA_FIRE, dir) {
 
 }
 
@@ -393,17 +384,16 @@ void PiranhaFireball::doSomething() {
 		return;
 	}
 
-	move();
+	move(false);
 }
 
-PeachFireball::PeachFireball(StudentWorld* world, int x, int y, int dir) : Fireball(world, x, y, IID_PEACH_FIRE, dir) {}
+PeachFireball::PeachFireball(StudentWorld* world, int x, int y, int dir) : AutoActor(world, x, y, IID_PEACH_FIRE, dir) {}
 
 PeachFireball::~PeachFireball() {
 
 }
 
 void PeachFireball::doSomething() {
-	cout << "Fireball: " << endl << getX() << endl << getY() << endl << endl;
 	if (getWorld()->objectOverlaps(getX(), getY()) != nullptr &&
 		getWorld()->objectOverlaps(getX(), getY())->damageable() &&
 		!getWorld()->isPeachAt(getX(), getY())) {
@@ -412,7 +402,7 @@ void PeachFireball::doSomething() {
 		return;
 	}
 
-	move();
+	move(false);
 }
 
 Shell::Shell(StudentWorld* world, int x, int y, int dir) : AutoActor(world, x, y, IID_SHELL, dir) {}
@@ -430,7 +420,7 @@ void Shell::doSomething() {
 		return;
 	}
 
-	move();
+	move(false);
 }
 
 Goomba::Goomba(StudentWorld* world, int x, int y) : Enemy(world, IID_GOOMBA, x, y) { // 0 degrees if rand returns even number, 180 if odd
@@ -464,9 +454,53 @@ Piranha::Piranha(StudentWorld* world, int x, int y) : Actor(world, IID_PIRANHA, 
 }
 
 Piranha::~Piranha() {
-
+	
 }
 
 void Piranha::doSomething() {
+	if (alive()) {
+		increaseAnimationNumber();
+		if (getWorld()->isPeachAt(getX(), getY())) {
+			getWorld()->getPeach()->bonk();
+			return;
+		}
+		int peachX = getWorld()->getPeach()->getX();
+		int peachY = getWorld()->getPeach()->getY();
+		if (abs(getY() - peachY) < 1.5 * SPRITE_HEIGHT) {
+			if (peachX > getX()) {
+				setDirection(0);
+			}
+			else {
+				setDirection(180);
+			}
+		}
+		else {
+			return;
+		}
 
+		if (m_delay > 0) {
+			m_delay--;
+			return;
+		}
+		else {
+			if (abs(getX() - peachX) < int(8) * SPRITE_WIDTH) {
+				getWorld()->addActor(new PiranhaFireball(getWorld(), getX(), getY(), getDirection()));
+				getWorld()->playSound(SOUND_PIRANHA_FIRE);
+				m_delay = 40;
+			}
+		}
+	}
+}
+
+void Piranha::bonk() {
+	if (getWorld()->getPeach()->hasStarPower()) {
+		getWorld()->playSound(SOUND_PLAYER_KICK);
+		getWorld()->increaseScore(100);
+		kill();
+	}
+}
+
+void Piranha::damage() {
+	getWorld()->increaseScore(100);
+	kill();
 }

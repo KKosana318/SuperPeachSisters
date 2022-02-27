@@ -93,6 +93,19 @@ int StudentWorld::init() {
 }
 
 int StudentWorld::move() {
+    ostringstream status;
+    status << "Lives: " << getLives() << "  Level: " << getLevel() << "  Points: " << getScore();
+    if (peach->hasStarPower()) {
+        status << " StarPower!";
+    }
+    if (peach->hasShootPower()) {
+        status << " ShootPower!";
+    }
+    if (peach->hasJumpPower()) {
+        status << " JumpPower!";
+    }
+
+    setGameStatText(status.str());
     peach->doSomething();
 
     for (auto const& actor : actors) {
@@ -172,7 +185,10 @@ Actor* StudentWorld::objectOverlaps(int x, int y) {
 
 
 bool StudentWorld::isPeachAt(int x, int y) {
-    return (abs(peach->getX() - x) < SPRITE_WIDTH && abs(peach->getY() - y) < SPRITE_HEIGHT);
+    int peachX = peach->getX();
+    int peachY = peach->getY();
+    return (abs(peachX - x) < SPRITE_WIDTH && abs(peachY - y) < SPRITE_HEIGHT);
+    //return (abs(peachX - x) < SPRITE_WIDTH && abs(peachX - y) < SPRITE_HEIGHT);
 }
 
 void StudentWorld::addActor(Actor* actor) {
