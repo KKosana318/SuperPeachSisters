@@ -19,8 +19,8 @@ public:
 
 	virtual ~Actor() = 0;
 	StudentWorld* getWorld() { return m_world; }
-	virtual void doSomething();
-	virtual void bonk();
+	virtual void doSomething() {}
+	virtual void bonk() {}
 	bool alive() { return m_alive; }
 	void kill() { m_alive = false; }
 	virtual bool blocking() { return false; }

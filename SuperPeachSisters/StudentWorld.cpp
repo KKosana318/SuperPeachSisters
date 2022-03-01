@@ -167,23 +167,6 @@ Actor* StudentWorld::objectAt(int x, int y) {
     return nullptr;
 }
 
-// returns first non-peach object that overlaps with the object starting at x,y or nullptr if no such object
-Actor* StudentWorld::objectOverlaps(int x, int y) {
-    for (vector<Actor*>::iterator i = actors.begin(); i != actors.end(); i++) {
-        int firstX = (*i)->getX();
-        int secondX = x;
-        int firstY = (*i)->getY();
-        int secondY = y;
-        if (abs(firstX - secondX) < SPRITE_WIDTH && abs(firstY - secondY) < SPRITE_HEIGHT && firstX <= secondX && firstY <= secondY) {
-            return *i;
-        }
-    }
-
-    return nullptr;
-}
-
-
-
 bool StudentWorld::isPeachAt(int x, int y) {
     int peachX = peach->getX();
     int peachY = peach->getY();

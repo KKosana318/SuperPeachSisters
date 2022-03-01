@@ -16,7 +16,6 @@ public:
 	virtual int move();
 	virtual void cleanUp();
 	Actor* objectAt(int x, int y);
-	Actor* objectOverlaps(int x, int y);
 	bool isPeachAt(int x, int y);
 	void addActor(Actor* actor);
 	bool isPeach(Actor* actor);
